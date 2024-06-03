@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <p>Get authorizationCode here: <a href="https://rebrand.ly/authcode/" target="_blank">https://rebrand.ly/authcode/</a></p>
+    <label for="authCode">Authorization Code:</label><br>
+    <input type="text" id="authCode" name="authCode"><br><br>
+    <button id="loginButton">Login</button>
+
+    <div id="userDetails" style="display: none;">
+        <h2>User Details</h2>
+        <label for="accountId">Account ID:</label><br>
+        <input type="text" id="accountId" name="accountId"><br>
+        <label for="secret">Secret:</label><br>
+        <input type="text" id="secret" name="secret"><br>
+        <label for="deviceId">Device ID:</label><br>
+        <input type="text" id="deviceId" name="deviceId"><br>
+        <label for="displayName">Display Name:</label><br>
+        <span id="displayName"></span><br><br>
+    </div>
+
+    <h2>API Actions</h2>
+    <label for="number">Number:</label><br>
+    <input type="text" id="number" name="number"><br>
+    <label for="level">Level:</label><br>
+    <input type="text" id="level" name="level"><br>
+    <label for="emote">Emote Name:</label><br>
+    <input type="text" id="emote" name="emote"><br><br>
+
+    <button onclick="getCrowns()">Get Crowns</button>
+    <button onclick="getLevel()">Get Level</button>
+    <button onclick="equipEmote()">Equip Emote</button>
+    <button onclick="hide()">Hide</button>
+    <button onclick="unhide()">Unhide</button>
+
+    <p>Created by GreekNinja30. This site is a Beta Test.</p>
+
+    <script>
+        function makeRequest(url, successMessage) {
+            fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                alert(successMessage);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error occurred. Please try again.');
+            });
+        }
+
+        document.getElementById("loginButton").addEventListener("click", function() {
+            var authCode = document.getElementById("authCode").value.trim();
+            
+            if (!authCode) {
+                alert("Please enter the authorization code.");
+                return;
+            }
+            
+            // Simulate login success and show user details
+            document.getElementById("userDetails").style.display = "block";
+
+            // Make a request to the OAuth authorization endpoint with the provided authorization code
+            var tokenUrl = `https://api-xji1.onrender.com/oauth?authorization_code=${authCode}`;
+            fetch(tokenUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Assuming the response contains user details
+                    var accountId = data.account_id;
+                    var secret = data.secret;
+                    var deviceId = data.device_id;
+                    var displayName = data.display_name;
+
+                    // Populate user details input fields
+                    document.getElementById("accountId").value = accountId;
+                    document.getElementById("secret").value = secret;
+                    document.getElementById("deviceId").value = deviceId;
+                    document.getElementById("displayName").textContent = displayName;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error occurred while logging in. Please try again.');
+                });
+        });
+
+        function getCrowns() {
+            var accountId = document.getElementById("accountId").value;
+            var secret = document.getElementById("secret").value;
+            var deviceId = document.getElementById("deviceId").value;
+            var number = document.getElementById("number").value;
+            var apiUrl = `https://api-xji1.onrender.com/api/v2/party/crowns?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}&number=${number}`;
+            makeRequest(apiUrl, "Successfully retrieved crowns.");
+        }
+
+        function getLevel() {
+            var accountId = document.getElementById("accountId").value;
+            var secret = document.getElementById("secret").value;
+            var deviceId = document.getElementById("deviceId").value;
+            var levelCount = document.getElementById("level").value;
+            var apiUrl = `https://api-xji1.onrender.com/api/v2/party/level?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}&level=${levelCount}`;
+            makeRequest(apiUrl, "Successfully retrieved level.");
+        }
+
+        function equipEmote() {
+            var accountId = document.getElementById("accountId").value;
+            var secret = document.getElementById("secret").value;
+            var deviceId = document.getElementById("deviceId").value;
+            var emoteName = document.getElementById("emote").value;
+            var apiUrl = `https://api-xji1.onrender.com/api/v2/party/ghostequip?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}&emote=${emoteName}`;
+            makeRequest(apiUrl, "Successfully equipped emote.");
+        }
+
+        function hide() {
+            var accountId = document.getElementById("accountId").value;
+            var secret = document.getElementById("secret").value;
+            var deviceId = document.getElementById("deviceId").value;
+            var apiUrl = `https://api-xji1.onrender.com/api/v2/party/hide?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}`;
+            makeRequest(apiUrl, "Successfully hidden.");
+        }
+
+        function unhide() {
+            var accountId = document.getElementById("accountId").value;
+            var secret = document.getElementById("secret").value;
+            var deviceId = document.getElementById("deviceId").value;
+            var apiUrl = `https://api-xji1.onrender.com/api/v2/party/unhide?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}`;
+            makeRequest(apiUrl, "Successfully unhidden.");
+        }
+    </script>
+</body>
+</html>
