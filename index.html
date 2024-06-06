@@ -35,28 +35,25 @@
         <label for="emote">Emote Name:</label><br>
         <input type="text" id="emote" name="emote"><br><br>
 
-        <button id="crownsButton" onclick="getCrowns()">Get Crowns</button>
-        <button id="levelButton" onclick="getLevel()">Get Level</button>
-        <button id="emoteButton" onclick="equipEmote()">Equip Emote</button>
-        <button id="hideButton" onclick="hide()">Hide</button>
-        <button id="unhideButton" onclick="unhide()">Unhide</button>
+        <button id="crownsButton">Get Crowns</button>
+        <button id="levelButton">Get Level</button>
+        <button id="emoteButton">Equip Emote</button>
+        <button id="hideButton">Hide</button>
+        <button id="unhideButton">Unhide</button>
 
         <p class="created-by">Created by GreekNinja30. This site is a Beta Test.</p>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Check if user details are stored in local storage
             var storedDetails = localStorage.getItem("userDetails");
             if (storedDetails) {
-                // If stored details exist, populate the input fields with the saved values
                 var userDetails = JSON.parse(storedDetails);
                 document.getElementById("accountId").value = userDetails.accountId || '';
                 document.getElementById("secret").value = userDetails.secret || '';
                 document.getElementById("deviceId").value = userDetails.deviceId || '';
                 document.getElementById("displayName").textContent = userDetails.displayName || '';
 
-                // Show user details section and logout button
                 document.getElementById("userDetails").style.display = "block";
                 document.getElementById("logoutButton").style.display = "block";
                 document.getElementById("loginButton").style.display = "none";
@@ -65,13 +62,12 @@
 
         document.getElementById("loginButton").addEventListener("click", function() {
             var authCode = document.getElementById("authCode").value.trim();
-            
+
             if (!authCode) {
                 alert("Please enter the authorization code.");
                 return;
             }
-            
-            // Make a request to the OAuth authorization endpoint with the provided authorization code
+
             var tokenUrl = `https://api-xji1.onrender.com/oauth?authorization_code=${authCode}`;
             fetch(tokenUrl)
                 .then(response => {
@@ -81,7 +77,6 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Assuming the response contains user details
                     var userDetails = {
                         accountId: data.account_id,
                         secret: data.secret,
@@ -89,16 +84,13 @@
                         displayName: data.display_name
                     };
 
-                    // Save user details to local storage
                     localStorage.setItem("userDetails", JSON.stringify(userDetails));
 
-                    // Populate user details input fields
                     document.getElementById("accountId").value = userDetails.accountId;
                     document.getElementById("secret").value = userDetails.secret;
                     document.getElementById("deviceId").value = userDetails.deviceId;
                     document.getElementById("displayName").textContent = userDetails.displayName;
 
-                    // Show user details section and logout button
                     document.getElementById("userDetails").style.display = "block";
                     document.getElementById("logoutButton").style.display = "block";
                     document.getElementById("loginButton").style.display = "none";
@@ -110,21 +102,53 @@
         });
 
         document.getElementById("logoutButton").addEventListener("click", function() {
-            // Clear user details from local storage
             localStorage.removeItem("userDetails");
-            // Clear user details
+
             document.getElementById("accountId").value = '';
             document.getElementById("secret").value = '';
             document.getElementById("deviceId").value = '';
             document.getElementById("displayName").textContent = '';
 
-            // Hide user details section
             document.getElementById("userDetails").style.display = "none";
             document.getElementById("logoutButton").style.display = "none";
             document.getElementById("loginButton").style.display = "block";
 
             alert('You have been logged out.');
         });
+
+        document.getElementById("crownsButton").addEventListener("click", getCrowns);
+        document.getElementById("levelButton").addEventListener("click", getLevel);
+        document.getElementById("emoteButton").addEventListener("click", equipEmote);
+        document.getElementById("hideButton").addEventListener("click", hide);
+        document.getElementById("unhideButton").addEventListener("click", unhide);
+
+        function makeRequest(url, successMessage, button) {
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(successMessage);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    if (error.message.includes('User is offline')) {
+                        var username = document.getElementById("displayName").textContent;
+                        alert(`Your account is offline. *open fortnite*`);
+                    } else {
+                        alert('Your account is offline. "open fortnite" ');
+                    }
+                })
+                .finally(() => {
+                    button.disabled = false;
+                });
+            button.disabled = true;
+        }
 
         function getCrowns() {
             var accountId = document.getElementById("accountId").value;
