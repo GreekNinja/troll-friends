@@ -1,88 +1,104 @@
-/* style.css */
 body {
-    font-family: 'Burbank Big Condensed', Arial, sans-serif;
-    background: #0d1f33;
-    color: white;
-    text-align: center;
+    font-family: 'Burbank Big Condensed', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #0f1113;
+    color: #fff;
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
     padding: 20px;
-    animation: fadeIn 1s ease-in-out;
-}
-
-h1, h2 {
-    color: #ffcc00;
-    text-shadow: 2px 2px 0 #000;
-    animation: slideInFromTop 1s ease-in-out;
-}
-
-input[type="text"], button {
-    font-family: 'Burbank Big Condensed', Arial, sans-serif;
-    font-size: 18px;
-    padding: 10px;
-    margin: 5px;
-    border: none;
-    border-radius: 5px;
-    animation: fadeInUp 1s ease-in-out;
-}
-
-input[type="text"] {
-    width: calc(100% - 22px);
-    background: #e8e8e8;
-    color: #000;
-    text-align: center;
-}
-
-button {
-    background: #ffcc00;
-    color: #000;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-button:hover {
-    background: #ff9900;
-}
-
-a {
-    color: #ffcc00;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-a:hover {
-    color: #ff9900;
-}
-
-#userDetails {
-    margin-top: 20px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
+    background-color: #1a1c20;
     border-radius: 10px;
-    animation: fadeInUp 1s ease-in-out;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.5s ease-in-out;
 }
 
-#userDetails input {
-    width: calc(100% - 22px);
-    background: #e8e8e8;
-    color: #000;
+h1 {
     text-align: center;
-}
-
-#userDetails span {
-    display: block;
-    margin: 10px 0;
-    font-size: 20px;
-}
-
-button:disabled {
-    background: grey;
-    cursor: not-allowed;
+    color: #fff;
+    font-size: 48px;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 p {
-    margin-top: 20px;
+    font-size: 18px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    border: 2px solid transparent;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 16px;
+    transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus {
+    border-color: #ff5f00;
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 10px rgba(255, 95, 0, 0.7);
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    margin: 20px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #ff5f00;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+    background-color: #ff7f33;
+    transform: scale(1.05);
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.created-by {
+    text-align: center;
+    color: #fff;
     font-size: 14px;
-    color: #ffcc00;
-    animation: fadeIn 1s ease-in-out;
+}
+
+.created-by a {
+    color: #ff5f00;
+    text-decoration: none;
+}
+
+.user-details input[type="text"] {
+    filter: blur(3px);
+}
+
+.authorize-link {
+    display: block;
+    margin-bottom: 20px;
+    color: #ff5f00; /* Orange color */
+    text-decoration: none;
+}
+
+.authorize-link:hover {
+    text-decoration: underline;
+}
+
+.created-by a:hover {
+    text-decoration: underline;
 }
 
 @keyframes fadeIn {
@@ -91,27 +107,5 @@ p {
     }
     to {
         opacity: 1;
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideInFromTop {
-    from {
-        opacity: 0;
-        transform: translateY(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
     }
 }
