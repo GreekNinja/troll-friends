@@ -17,4 +17,5 @@ Get Authorization Code: Visit the provided link to get the authorization code.
 Login: Enter the authorization code and click the "Login" button.
 Perform API actions: Once logged in, use the input fields and buttons to perform various API actions.
 Logout: Click the Logout button to end the session.
+
 © Do not copy/use the code unless you ask GreekNinja30 On Discord, All His Code Is Made By Him So You Will Need His Permission Thanks!
