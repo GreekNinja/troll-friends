@@ -7,7 +7,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div id="loadingScreen" class="loading-screen">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <div class="container" id="mainContent" style="display:none;">
+        <div id="userHeader" class="user-header" style="display:none;">
+            <img id="userSkin" src="" alt="User Skin" class="user-skin">
+            <span id="userName" class="user-name"></span>
+        </div>
+
         <h1>Login</h1>
         <p>Get authorizationCode here: <a href="https://rebrand.ly/authcode/" target="_blank" class="authorize-link">https://rebrand.ly/authcode/</a></p>
         <label for="authCode">Authorization Code:</label><br>
@@ -45,7 +55,26 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        
+        async function fetchRandomSkin() {
+            try {
+                const response = await fetch('https://fortnite-api.com/v2/cosmetics/br');
+                const data = await response.json();
+                const skins = data.data.filter(item => item.type.value === 'outfit');
+                const randomSkin = skins[Math.floor(Math.random() * skins.length)];
+                return randomSkin.images.icon;
+            } catch (error) {
+                console.error('Error fetching random skin:', error);
+                return 'default-skin.png';
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", async function() {
+            setTimeout(function() {
+                document.getElementById("loadingScreen").style.display = "none";
+                document.getElementById("mainContent").style.display = "block";
+            }, 2000);
+
             var storedDetails = localStorage.getItem("userDetails");
             if (storedDetails) {
                 var userDetails = JSON.parse(storedDetails);
@@ -54,17 +83,24 @@
                 document.getElementById("deviceId").value = userDetails.deviceId || '';
                 document.getElementById("displayName").textContent = userDetails.displayName || '';
 
+                document.getElementById("userHeader").style.display = "flex";
+                document.getElementById("userName").textContent = userDetails.displayName || '';
+
+                // Fetch and display random skin
+                const randomSkinUrl = await fetchRandomSkin();
+                document.getElementById("userSkin").src = randomSkinUrl;
+
                 document.getElementById("userDetails").style.display = "block";
                 document.getElementById("logoutButton").style.display = "block";
                 document.getElementById("loginButton").style.display = "none";
             }
         });
 
-        document.getElementById("loginButton").addEventListener("click", function() {
+        document.getElementById("loginButton").addEventListener("click", async function() {
             var authCode = document.getElementById("authCode").value.trim();
 
             if (!authCode) {
-                alert("Please enter the authorization code.");
+                showAlert("Please enter the authorization code.");
                 return;
             }
 
@@ -76,12 +112,12 @@
                     }
                     return response.json();
                 })
-                .then(data => {
+                .then(async data => {
                     var userDetails = {
                         accountId: data.account_id,
                         secret: data.secret,
                         deviceId: data.device_id,
-                        displayName: data.display_name
+                        displayName: data.display_name,
                     };
 
                     localStorage.setItem("userDetails", JSON.stringify(userDetails));
@@ -91,13 +127,20 @@
                     document.getElementById("deviceId").value = userDetails.deviceId;
                     document.getElementById("displayName").textContent = userDetails.displayName;
 
+                    document.getElementById("userHeader").style.display = "flex";
+                    document.getElementById("userName").textContent = userDetails.displayName;
+
+                    // Fetch and display random skin
+                    const randomSkinUrl = await fetchRandomSkin();
+                    document.getElementById("userSkin").src = randomSkinUrl;
+
                     document.getElementById("userDetails").style.display = "block";
                     document.getElementById("logoutButton").style.display = "block";
                     document.getElementById("loginButton").style.display = "none";
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error occurred while logging in. Please try again.');
+                    showAlert('Error occurred while logging in. Please try again.');
                 });
         });
 
@@ -109,11 +152,12 @@
             document.getElementById("deviceId").value = '';
             document.getElementById("displayName").textContent = '';
 
+            document.getElementById("userHeader").style.display = "none";
             document.getElementById("userDetails").style.display = "none";
             document.getElementById("logoutButton").style.display = "none";
             document.getElementById("loginButton").style.display = "block";
 
-            alert('You have been logged out.');
+            showAlert('You have been logged out.');
         });
 
         document.getElementById("crownsButton").addEventListener("click", getCrowns);
@@ -133,15 +177,15 @@
                     return response.json();
                 })
                 .then(data => {
-                    alert(successMessage);
+                    showAlert(successMessage);
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     if (error.message.includes('User is offline')) {
                         var username = document.getElementById("displayName").textContent;
-                        alert(`Your account is offline. *open fortnite*`);
+                        showAlert(`Your account is offline. *open fortnite*`);
                     } else {
-                        alert('Your account is offline. "open fortnite" Or Select One Number');
+                        showAlert('Your account is offline. "open fortnite" Or Select One Number');
                     }
                 })
                 .finally(() => {
@@ -191,6 +235,16 @@
             var deviceId = document.getElementById("deviceId").value;
             var apiUrl = `https://api-xji1.onrender.com/api/v2/party/unhide?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}`;
             makeRequest(apiUrl, "Successfully unhidden.", document.getElementById("unhideButton"));
+        }
+
+        function showAlert(message) {
+            var alertBox = document.createElement("div");
+            alertBox.className = "custom-alert";
+            alertBox.textContent = message;
+            document.body.appendChild(alertBox);
+            setTimeout(function() {
+                alertBox.remove();
+            }, 3000);
         }
     </script>
 </body>
