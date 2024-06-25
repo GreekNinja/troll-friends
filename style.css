@@ -6,6 +6,93 @@ body {
     color: #fff;
 }
 
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #00ff00; /* Πράσινο χρώμα */
+    font-size: 24px;
+    z-index: 9999;
+}
+
+.spinner {
+    border: 8px solid rgba(0, 255, 0, 0.3);
+    border-top: 8px solid #00ff00;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* User Header */
+.user-header {
+    display: flex;
+    align-items: center;
+    background-color: #121212;
+    padding: 10px;
+    border-bottom: 1px solid #00ff00;
+}
+
+.user-skin {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.user-name {
+    color: #00ff00;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Custom Alerts */
+.custom-alert {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #00ff00; /* Πράσινο χρώμα */
+    color: #000;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    90% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
 .container {
     max-width: 800px;
     margin: 50px auto;
@@ -18,7 +105,7 @@ body {
 
 h1 {
     text-align: center;
-    color: #fff;
+    color: #00ff00; /* Πράσινο χρώμα */
     font-size: 48px;
     margin-bottom: 30px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
@@ -43,9 +130,9 @@ input[type="text"] {
 }
 
 input[type="text"]:focus {
-    border-color: #ff5f00;
+    border-color: #00ff00; /* Πράσινο χρώμα */
     background-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 10px rgba(255, 95, 0, 0.7);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.7); /* Πράσινη σκιά */
 }
 
 button {
@@ -54,7 +141,7 @@ button {
     margin: 20px 0;
     border: none;
     border-radius: 5px;
-    background-color: #ff5f00;
+    background-color: #00ff00; /* Πράσινο χρώμα */
     color: #fff;
     font-size: 20px;
     cursor: pointer;
@@ -62,7 +149,7 @@ button {
 }
 
 button:hover {
-    background-color: #ff7f33;
+    background-color: #33ff33; /* Πιο ανοιχτό πράσινο */
     transform: scale(1.05);
 }
 
@@ -78,7 +165,7 @@ button:disabled {
 }
 
 .created-by a {
-    color: #ff5f00;
+    color: #00ff00; /* Πράσινο χρώμα */
     text-decoration: none;
 }
 
@@ -89,7 +176,7 @@ button:disabled {
 .authorize-link {
     display: block;
     margin-bottom: 20px;
-    color: #ff5f00; /* Orange color */
+    color: #00ff00; /* Πράσινο χρώμα */
     text-decoration: none;
 }
 
@@ -107,5 +194,38 @@ button:disabled {
     }
     to {
         opacity: 1;
+    }
+}
+
+.custom-alert {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #00ff00; /* Πράσινο χρώμα */
+    color: #000;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    90% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
     }
 }
