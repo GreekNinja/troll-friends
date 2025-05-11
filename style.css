@@ -1,231 +1,517 @@
+/* General body styling with Fortnite-like background and font */
 body {
-    font-family: 'Burbank Big Condensed', sans-serif;
+    font-family: 'Burbank Big Condensed', sans-serif; /* Use the requested font */
     margin: 0;
     padding: 0;
-    background-color: #0f1113;
-    color: #fff;
+    background: linear-gradient(to bottom, #1a1c20, #0f1113); /* Subtle gradient background */
+    color: #fff; /* White text by default */
+    min-height: 100vh; /* Ensure body takes at least full viewport height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden; /* Prevent horizontal scroll from animations */
+    position: relative; /* Needed for absolute positioning of background effects */
 }
 
-.loading-screen {
-    position: fixed;
+/* Background animation effect */
+body::before {
+    content: '';
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(0, 255, 255, 0.08), /* Slightly more visible pattern */
+        rgba(0, 255, 255, 0.08) 15px, /* Larger pattern blocks */
+        transparent 15px,
+        transparent 30px
+    );
+    animation: background-pattern 90s linear infinite; /* Slower moving pattern */
+    z-index: -1; /* Place behind content */
+}
+
+@keyframes background-pattern {
+    from { background-position: 0 0; }
+    to { background-position: 1500px 1500px; } /* Move further */
+}
+
+
+/* Styling for the initial loading screen */
+.loading-screen {
+    position: fixed; /* Cover the whole screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.98); /* Even darker, almost opaque overlay */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #00ff00; /* Πράσινο χρώμα */
-    font-size: 24px;
-    z-index: 9999;
+    color: #00ffff; /* Bright cyan for loading text */
+    font-size: 48px; /* Much larger font size */
+    z-index: 9999; /* Ensure it's on top */
+    text-shadow: 3px 3px 10px rgba(0, 255, 255, 1); /* Stronger text shadow with glow */
+    letter-spacing: 3px; /* Add letter spacing */
+    text-transform: uppercase; /* Uppercase text */
+    animation: text-pulse 2s ease-in-out infinite alternate; /* Add text pulse animation */
+    font-family: 'Burbank Big Condensed', sans-serif; /* Apply font */
 }
 
+/* Keyframes for text pulse animation */
+@keyframes text-pulse {
+    0% { text-shadow: 3px 3px 10px rgba(0, 255, 255, 1); }
+    100% { text-shadow: 3px 3px 15px rgba(0, 255, 255, 1), 3px 3px 20px rgba(0, 255, 255, 0.8); }
+}
+
+
+/* Styling for the loading spinner */
 .spinner {
-    border: 8px solid rgba(0, 255, 0, 0.3);
-    border-top: 8px solid #00ff00;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 10px;
+    border: 10px solid rgba(0, 255, 255, 0.3); /* Thicker cyan border with transparency */
+    border-top: 10px solid #00ffff; /* Solid cyan top border */
+    border-radius: 50%; /* Make it round */
+    width: 80px; /* Larger spinner */
+    height: 80px;
+    animation: spin 1s linear infinite, pulse-glow 1.5s ease-in-out infinite alternate; /* Spin and pulse glow animation */
+    margin-bottom: 30px; /* More space below spinner */
 }
 
+/* Keyframes for the spin animation */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
-/* User Header */
+/* Keyframes for pulse glow animation */
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 15px rgba(0, 255, 255, 0.7); }
+    100% { box-shadow: 0 0 25px rgba(0, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.9); }
+}
+
+
+/* Styling for the user header - now acts more like a card */
 .user-header {
     display: flex;
     align-items: center;
-    background-color: #121212;
-    padding: 10px;
-    border-bottom: 1px solid #00ff00;
+    background: linear-gradient(45deg, #2a2d33, #3a3e45); /* Gradient background */
+    padding: 20px; /* More padding */
+    border: 3px solid #ff00ff; /* Vibrant magenta border */
+    border-radius: 15px; /* More rounded corners */
+    margin-bottom: 30px; /* More space below */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5); /* Pronounced shadow */
+    position: relative; /* Needed for pseudo-elements */
+    overflow: hidden; /* Hide overflowing glint */
+    transform-style: preserve-3d; /* Enable 3D transforms for children */
+    perspective: 1000px; /* Perspective for 3D effect */
+    transition: transform 0.3s ease;
 }
 
+.user-header:hover {
+    transform: rotateY(5deg) rotateX(5deg) translateZ(10px); /* Slight 3D tilt on hover */
+}
+
+/* Glint effect on user header */
+.user-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%; /* Start outside */
+    width: 50%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3); /* White semi-transparent */
+    transform: skewX(-20deg); /* Skew the glint */
+    animation: glint 2s infinite linear; /* Glint animation */
+}
+
+@keyframes glint {
+    0% { left: -100%; }
+    50% { left: 150%; } /* Move across */
+    100% { left: 150%; }
+}
+
+
+/* Styling for the user skin image */
 .user-skin {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    margin-right: 10px;
+    width: 80px; /* Even larger skin image */
+    height: 80px;
+    border-radius: 50%; /* Keep it round */
+    margin-right: 20px; /* More space to the right */
+    border: 4px solid #ffff00; /* Bright yellow border */
+    box-shadow: 0 0 15px rgba(255, 255, 0, 0.9); /* Stronger yellow glow effect */
+    object-fit: cover; /* Ensure image covers the area */
+    flex-shrink: 0; /* Prevent shrinking */
 }
 
+/* Styling for the user name */
 .user-name {
-    color: #00ff00;
-    font-size: 18px;
+    color: #ffff00; /* Bright yellow color */
+    font-size: 28px; /* Larger font size */
     font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Stronger text shadow */
+    flex-grow: 1; /* Allow name to take available space */
+    text-align: left; /* Align name to the left */
+    font-family: 'Burbank Big Condensed', sans-serif; /* Apply font */
 }
 
-/* Custom Alerts */
-.custom-alert {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #00ff00; /* Πράσινο χρώμα */
-    color: #000;
-    padding: 15px 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    animation: fadeInOut 3s ease-in-out;
-}
-
-@keyframes fadeInOut {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    10% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    90% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-}
-
+/* Styling for the main container */
 .container {
-    max-width: 800px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #1a1c20;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    animation: fadeIn 0.5s ease-in-out;
+    max-width: 700px; /* Adjusted max width */
+    width: 95%; /* Make it more responsive */
+    margin: 20px auto; /* Center with some margin */
+    padding: 30px; /* More padding */
+    background-color: #1a1c20; /* Dark background */
+    border-radius: 15px; /* More rounded corners */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7); /* Pronounced shadow */
+    animation: fadeIn 0.8s ease-in-out; /* Fade in animation */
+    border: 3px solid #00ffff; /* Cyan border */
 }
 
-h1 {
-    text-align: center;
-    color: #00ff00; /* Πράσινο χρώμα */
-    font-size: 48px;
-    margin-bottom: 30px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-}
-
-p {
-    font-size: 18px;
-    line-height: 1.5;
-    margin-bottom: 20px;
-}
-
-input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    box-sizing: border-box;
-    border: 2px solid transparent;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    font-size: 16px;
-    transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-input[type="text"]:focus {
-    border-color: #00ff00; /* Πράσινο χρώμα */
-    background-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.7); /* Πράσινη σκιά */
-}
-
-button {
-    width: 100%;
-    padding: 15px;
-    margin: 20px 0;
-    border: none;
-    border-radius: 5px;
-    background-color: #00ff00; /* Πράσινο χρώμα */
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-button:hover {
-    background-color: #33ff33; /* Πιο ανοιχτό πράσινο */
-    transform: scale(1.05);
-}
-
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.created-by {
-    text-align: center;
-    color: #fff;
-    font-size: 14px;
-}
-
-.created-by a {
-    color: #00ff00; /* Πράσινο χρώμα */
-    text-decoration: none;
-}
-
-.user-details input[type="text"] {
-    filter: blur(3px);
-}
-
-.authorize-link {
-    display: block;
-    margin-bottom: 20px;
-    color: #00ff00; /* Πράσινο χρώμα */
-    text-decoration: none;
-}
-
-.authorize-link:hover {
-    text-decoration: underline;
-}
-
-.created-by a:hover {
-    text-decoration: underline;
-}
-
+/* Keyframes for the fadeIn animation */
 @keyframes fadeIn {
     from {
         opacity: 0;
+        transform: translateY(30px);
     }
     to {
         opacity: 1;
+        transform: translateY(0);
     }
 }
 
-.custom-alert {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #00ff00; /* Πράσινο χρώμα */
-    color: #000;
-    padding: 15px 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    animation: fadeInOut 3s ease-in-out;
+/* Styling for the main heading */
+h1 {
+    text-align: center;
+    color: #ff00ff; /* Magenta color */
+    font-size: 60px; /* Even larger font size */
+    margin-bottom: 40px; /* More space below */
+    text-shadow: 4px 4px 6px rgba(0,0,0,0.8); /* Stronger text shadow */
+    letter-spacing: 3px; /* Add more letter spacing */
+    position: relative;
+    display: inline-block; /* Needed for underline effect */
+    font-family: 'Burbank Big Condensed', sans-serif; /* Apply font */
 }
 
-@keyframes fadeInOut {
+/* Underline effect for h1 */
+h1::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -10px; /* Position below text */
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #ffff00, #00ffff); /* Gradient underline */
+    border-radius: 3px;
+    animation: underline-pulse 2s ease-in-out infinite alternate; /* Pulse animation */
+}
+
+@keyframes underline-pulse {
+    0% { transform: scaleX(0.8); opacity: 0.7; }
+    100% { transform: scaleX(1); opacity: 1; }
+}
+
+
+/* Styling for paragraphs */
+p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    color: #ccc; /* Lighter grey text color */
+    font-family: sans-serif; /* Keep a readable fallback for paragraphs */
+}
+
+/* Styling for input fields */
+input[type="text"] {
+    width: calc(100% - 28px); /* Adjust for padding and border */
+    padding: 14px; /* More padding */
+    margin: 12px 0;
+    box-sizing: border-box;
+    border: 3px solid transparent; /* Transparent border by default */
+    border-radius: 10px; /* More rounded corners */
+    background-color: rgba(255, 255, 255, 0.15); /* Semi-transparent white background */
+    color: #fff;
+    font-size: 18px; /* Larger font size */
+    transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    outline: none; /* Remove default outline */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-family: 'Burbank Big Condensed', sans-serif; /* Apply font */
+}
+
+/* Styling for focused input fields */
+input[type="text"]:focus {
+    border-color: #ffff00; /* Yellow border on focus */
+    background-color: rgba(255, 255, 255, 0.25); /* More opaque background on focus */
+    box-shadow: 0 0 15px rgba(255, 255, 0, 1); /* Stronger yellow glow */
+}
+
+/* Styling for buttons */
+button {
+    width: 100%;
+    padding: 18px; /* More padding */
+    margin: 15px 0; /* Adjusted margin */
+    border: none;
+    border-radius: 10px; /* More rounded corners */
+    background: linear-gradient(45deg, #ff00ff, #00ffff); /* Gradient button background */
+    color: #fff;
+    font-size: 24px; /* Larger font size */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, filter 0.3s ease;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); /* Button shadow */
+    text-transform: uppercase; /* Uppercase text */
+    font-weight: bold;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Burbank Big Condensed', sans-serif; /* Apply font */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Text shadow on buttons */
+}
+
+/* Glint effect on buttons */
+button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 30%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: skewX(-20deg);
+    animation: glint 1.5s infinite linear; /* Faster glint animation */
+    animation-delay: var(--delay, 0s); /* Allow different delays for buttons */
+}
+
+/* Adjust glint delay for different buttons */
+#loginButton::before { --delay: 0s; }
+#logoutButton::before { --delay: 0.2s; }
+#crownsButton::before { --delay: 0.4s; }
+#levelButton::before { --delay: 0.6s; }
+#emoteButton::before { --delay: 0.8s; }
+#hideButton::before { --delay: 1s; }
+#unhideButton::before { --delay: 1.2s; }
+
+
+/* Hover effect for buttons */
+button:hover {
+    background: linear-gradient(45deg, #ff33ff, #33ffff); /* Lighter gradient on hover */
+    transform: translateY(-5px) scale(1.02); /* More pronounced lift and slight scale */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Stronger shadow on hover */
+    filter: brightness(1.2); /* Slightly brighter */
+}
+
+/* Active (pressed) state for buttons */
+button:active {
+    transform: translateY(0) scale(1); /* Press down effect */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    filter: brightness(1);
+    transition: transform 0.1s ease; /* Faster transition for press */
+}
+
+/* Disabled state for buttons */
+button:disabled {
+    background: #555; /* Darker grey when disabled */
+    cursor: not-allowed;
+    transform: none; /* No lift effect when disabled */
+    box-shadow: none; /* No shadow when disabled */
+    filter: none;
+    text-shadow: none; /* No text shadow when disabled */
+}
+
+/* Styling for the created by text */
+.created-by {
+    text-align: center;
+    color: #ccc; /* Lighter grey color */
+    font-size: 22px; /* Increased font size */
+    margin-top: 40px; /* More space above */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); /* Stronger text shadow */
+    font-weight: bold; /* Make it bold */
+    font-family: 'Burbank Big Condensed', sans-serif; /* Apply font */
+}
+
+/* Styling for links within created by text */
+.created-by a {
+    color: #00ffff; /* Cyan color for links */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+/* Hover effect for created by links */
+.created-by a:hover {
+    color: #ffff00; /* Yellow on hover */
+    text-decoration: underline;
+}
+
+/* Styling for blurring the user details input fields */
+.user-details input[type="text"] {
+    filter: blur(4px); /* Slightly more blur */
+    pointer-events: none; /* Prevent interaction */
+    background-color: rgba(255, 255, 255, 0.05); /* Less visible background when blurred */
+    border-color: transparent; /* No border when blurred */
+    box-shadow: none; /* No shadow when blurred */
+    font-family: sans-serif; /* Keep a readable fallback for blurred text */
+}
+
+/* Styling for the authorization link */
+.authorize-link {
+    display: block;
+    margin-bottom: 25px;
+    color: #ffff00; /* Yellow color */
+    text-decoration: none;
+    font-size: 20px; /* Slightly larger font size */
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); /* Stronger text shadow */
+    font-weight: bold; /* Make it bold */
+    font-family: 'Burbank Big Condensed', sans-serif; /* Apply font */
+    position: relative;
+    display: inline-block; /* Needed for underline effect */
+}
+
+/* Underline effect for authorize link */
+.authorize-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px; /* Position below text */
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, #ff00ff, #00ffff); /* Gradient underline */
+    border-radius: 2px;
+    transform: scaleX(0); /* Start hidden */
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-out;
+}
+
+.authorize-link:hover::after {
+    transform: scaleX(1); /* Expand on hover */
+    transform-origin: bottom left;
+}
+
+
+/* Styling for the user details section */
+.user-details {
+    margin-top: 30px; /* More space above */
+    padding-top: 25px; /* More padding */
+    border-top: 3px solid #00ffff; /* Cyan border */
+    text-align: left;
+}
+
+/* Styling for the display name span */
+#displayName {
+    font-weight: bold; /* Make display name bold */
+    color: #ffff00; /* Yellow color */
+    display: inline-block;
+    margin-bottom: 15px;
+    font-size: 24px; /* Larger font size */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); /* Stronger text shadow */
+    font-family: 'Burbank Big Condensed', sans-serif; /* Apply font */
+}
+
+/* Custom Alerts (for all messages) */
+.custom-alert {
+    position: absolute; /* Use absolute positioning */
+    background: linear-gradient(45deg, #ff00ff, #ffff00); /* Vibrant gradient */
+    color: #1a1c20; /* Dark text for contrast */
+    padding: 20px 30px; /* Padding */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7); /* Stronger shadow */
+    z-index: 1000;
+    animation: alert-from-click 3s ease-out forwards; /* Use the new animation */
+    font-size: 20px; /* Font size */
+    font-weight: bold;
+    text-align: center;
+    border: 4px solid #00ffff; /* Cyan border */
+    font-family: 'Burbank Big Condensed', sans-serif; /* Apply font */
+    text-transform: uppercase; /* Uppercase text */
+    letter-spacing: 2px; /* Letter spacing */
+    opacity: 0; /* Start hidden */
+    /* Initial transform is set in JS based on click location */
+}
+
+/* New Keyframes for the alert animation from click location */
+@keyframes alert-from-click {
     0% {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translate(-50%, -50%) scale(0.5); /* Start smaller and centered on the click point */
     }
-    10% {
+    20% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate(-50%, -100%) scale(1.1); /* Pop up above the click point with slight overshoot */
     }
-    90% {
+    30% {
+        transform: translate(-50%, -100%) scale(1); /* Settle above the click point */
+    }
+    80% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate(-50%, -100%) scale(1); /* Stay visible */
     }
     100% {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translate(-50%, -100%) scale(0.8); /* Fade out and scale down slightly */
+    }
+}
+
+
+/* Apply Burbank Big Condensed to all relevant text elements */
+h2, label {
+    font-family: 'Burbank Big Condensed', sans-serif;
+    color: #00ffff; /* Cyan color for labels and h2 */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    margin-bottom: 10px;
+}
+
+label {
+    font-size: 18px;
+}
+
+/* Styling for debris pieces */
+.debris {
+    position: fixed; /* Position relative to viewport */
+    width: 5px; /* Default size */
+    height: 5px;
+    border-radius: 50%; /* Make debris round */
+    pointer-events: none; /* Ignore mouse events */
+    z-index: 9998; /* Below loading screen, above content */
+}
+
+/* Styling for the clickable detail containers */
+.copyable-detail {
+    cursor: pointer; /* Indicate that the element is clickable */
+    margin-bottom: 15px; /* Add some space below each detail */
+}
+
+.copyable-detail label {
+    cursor: pointer; /* Ensure cursor changes when hovering over the label */
+    margin-bottom: 5px; /* Reduce space between label and input */
+    display: block; /* Make label a block element for better layout */
+}
+
+.copyable-detail input[type="text"] {
+    margin-top: 0; /* Remove top margin to pull it closer to the label */
+}
+
+/* New animation for the logout button */
+.logout-animating {
+    animation: logout-burst 2s ease-out forwards; /* Apply the burst animation */
+    opacity: 1 !important; /* Ensure it's visible during animation */
+    transform: scale(1) !important; /* Reset any previous transforms */
+}
+
+@keyframes logout-burst {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+    20% {
+        transform: scale(1.1); /* Scale up slightly */
+        opacity: 1;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+        filter: brightness(1.5); /* Flash effect */
+    }
+    100% {
+        transform: scale(0.5); /* Scale down as it bursts */
+        opacity: 0; /* Fade out */
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0); /* Remove shadow */
+        filter: brightness(1);
     }
 }
