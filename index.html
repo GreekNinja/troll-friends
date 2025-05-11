@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GlowFN</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Burbank+Big+Condensed&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="loadingScreen" class="loading-screen">
@@ -27,47 +28,142 @@
 
         <div id="userDetails" class="user-details" style="display: none;">
             <h2>User Details</h2>
-            <label for="accountId">Account ID:</label><br>
-            <input type="text" id="accountId" name="accountId"><br>
-            <label for="secret">Secret:</label><br>
-            <input type="text" id="secret" name="secret"><br>
-            <label for="deviceId">Device ID:</label><br>
-            <input type="text" id="deviceId" name="deviceId"><br>
+            <div class="copyable-detail" onclick="copyToClipboard('accountId', this)">
+                <label for="accountId">Account ID:</label><br>
+                <input type="text" id="accountId" name="accountId" readonly>
+            </div>
+            <div class="copyable-detail" onclick="copyToClipboard('secret', this)">
+                <label for="secret">Secret:</label><br>
+                <input type="text" id="secret" name="secret" readonly>
+            </div>
+            <div class="copyable-detail" onclick="copyToClipboard('deviceId', this)">
+                <label for="deviceId">Device ID:</label><br>
+                <input type="text" id="deviceId" name="deviceId" readonly>
+            </div>
             <label for="displayName">Display Name:</label><br>
             <span id="displayName"></span><br><br>
         </div>
-
-        <h2>API Actions</h2>
-        <label for="number">Crowns:</label><br>
-        <input type="text" id="number" name="number"><br>
-        <label for="level">Level:</label><br>
-        <input type="text" id="level" name="level"><br>
-        <label for="emote">Emote Name:</label><br>
-        <input type="text" id="emote" name="emote"><br><br>
-
-        <button id="crownsButton">Get Crowns</button>
-        <button id="levelButton">Get Level</button>
-        <button id="emoteButton">Equip Emote</button>
-        <button id="hideButton">Hide</button>
-        <button id="unhideButton">Unhide</button>
 
         <p class="created-by">Created by GreekNinja30.</p>
     </div>
 
     <script>
-        
-        async function fetchRandomSkin() {
-            try {
-                const response = await fetch('https://fortnite-api.com/v2/cosmetics/br');
-                const data = await response.json();
-                const skins = data.data.filter(item => item.type.value === 'outfit');
-                const randomSkin = skins[Math.floor(Math.random() * skins.length)];
-                return randomSkin.images.icon;
-            } catch (error) {
-                console.error('Error fetching random skin:', error);
-                return 'default-skin.png';
+        function showAlert(message, clickedElement) {
+            var alertBox = document.createElement("div");
+            alertBox.className = "custom-alert";
+            alertBox.textContent = message;
+            document.body.appendChild(alertBox);
+
+            if (clickedElement) {
+                const rect = clickedElement.getBoundingClientRect();
+                alertBox.style.position = 'absolute';
+                alertBox.style.top = `${rect.top + window.scrollY - 20}px`;
+                alertBox.style.left = `${rect.left + rect.width / 2}px`;
+                alertBox.style.transform = 'translate(-50%, -100%)';
+                alertBox.style.setProperty('--start-x', `${rect.left + rect.width / 2}px`);
+                alertBox.style.setProperty('--start-y', `${rect.top + window.scrollY + rect.height / 2}px`);
+            } else {
+                 alertBox.style.position = 'fixed';
+                 alertBox.style.top = '50%';
+                 alertBox.style.left = '50%';
+                 alertBox.style.transform = 'translate(-50%, -50%)';
+                 alertBox.style.setProperty('--start-x', '50%');
+                 alertBox.style.setProperty('--start-y', '50%');
+            }
+
+            setTimeout(function() {
+                alertBox.remove();
+            }, 3000);
+        }
+
+        function createDebris(buttonElement, count = 30, sizeRange = { min: 2, max: 7 }, duration = 1.5, spread = 300) {
+            const buttonRect = buttonElement.getBoundingClientRect();
+            const debrisCount = count;
+
+            for (let i = 0; i < debrisCount; i++) {
+                const debris = document.createElement('div');
+                debris.className = 'debris';
+                debris.style.left = `${buttonRect.left + Math.random() * buttonRect.width}px`;
+                debris.style.top = `${buttonRect.top + Math.random() * buttonRect.height}px`;
+                const size = Math.random() * (sizeRange.max - sizeRange.min) + sizeRange.min;
+                debris.style.width = `${size}px`;
+                debris.style.height = `${size}px`;
+                const colors = ['#ff00ff', '#00ffff', '#ff33ff', '#33ffff'];
+                debris.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                debris.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+                document.body.appendChild(debris);
+
+                const animationDuration = duration;
+                const randomX = (Math.random() - 0.5) * spread;
+                const randomY = (Math.random() - 0.5) * spread;
+                const randomRotate = (Math.random() - 0.5) * 720;
+
+                debris.animate([
+                    { transform: `translate(0, 0) rotate(${debris.style.transform})`, opacity: 1 },
+                    { transform: `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg)`, opacity: 0 }
+                ], {
+                    duration: animationDuration * 1000,
+                    easing: 'ease-out',
+                    fill: 'both'
+                });
+
+                setTimeout(() => {
+                    debris.remove();
+                }, animationDuration * 1000);
             }
         }
+
+        function createSpecialLogoutAnimation(buttonElement) {
+             const animationDuration = 2000;
+
+             buttonElement.classList.add('logout-animating');
+
+             setTimeout(() => {
+                 createDebris(buttonElement, 80, { min: 4, max: 10 }, 1.8, 400);
+             }, 200);
+
+             setTimeout(() => {
+                 buttonElement.classList.remove('logout-animating');
+             }, animationDuration);
+
+             return animationDuration;
+        }
+
+        function animateLoginButtonIn(buttonElement) {
+             buttonElement.style.display = 'block';
+             buttonElement.style.opacity = 0;
+             buttonElement.style.transform = 'scale(0.8)';
+
+             buttonElement.animate([
+                 { opacity: 0, transform: 'scale(0.8)' },
+                 { opacity: 1, transform: 'scale(1)' }
+             ], {
+                 duration: 500,
+                 easing: 'ease-out',
+                 fill: 'both'
+             });
+        }
+
+        function copyToClipboard(elementId, clickedElement) {
+            const element = document.getElementById(elementId);
+            if (element && element.value) {
+                navigator.clipboard.writeText(element.value)
+                    .then(() => {
+                        showAlert(`Copied ${elementId} to clipboard!`, clickedElement);
+                        if (clickedElement) {
+                            createDebris(clickedElement, 20, { min: 1, max: 4 }, 1, 100);
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy:', err);
+                        showAlert(`Failed to copy ${elementId}.`, clickedElement);
+                    });
+            } else {
+                showAlert(`No ${elementId} to copy.`, clickedElement);
+            }
+        }
+
 
         document.addEventListener("DOMContentLoaded", async function() {
             setTimeout(function() {
@@ -86,29 +182,47 @@
                 document.getElementById("userHeader").style.display = "flex";
                 document.getElementById("userName").textContent = userDetails.displayName || '';
 
-                // Fetch and display random skin
-                const randomSkinUrl = await fetchRandomSkin();
-                document.getElementById("userSkin").src = randomSkinUrl;
+                document.getElementById("userSkin").src = userDetails.icon_url || 'https://placehold.co/100x100/cccccc/000000?text=Skin';
 
                 document.getElementById("userDetails").style.display = "block";
                 document.getElementById("logoutButton").style.display = "block";
                 document.getElementById("loginButton").style.display = "none";
+            } else {
+                 document.getElementById("loginButton").style.display = "block";
+                 document.getElementById("logoutButton").style.display = "none";
+                 document.getElementById("userHeader").style.display = "none";
+                 document.getElementById("userDetails").style.display = "none";
             }
+
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                if (button.id !== 'logoutButton') {
+                    button.addEventListener('click', function() {
+                        // Removed the specific alert for login button click
+                        // showAlert(`Button ${this.textContent.trim()} clicked!`, this);
+                        createDebris(this);
+                    });
+                }
+            });
         });
 
         document.getElementById("loginButton").addEventListener("click", async function() {
             var authCode = document.getElementById("authCode").value.trim();
 
             if (!authCode) {
-                showAlert("Please enter the authorization code.");
+                showAlert("Please enter the authorization code.", this);
                 return;
             }
 
             var tokenUrl = `https://o1-api.onrender.com/api/v1/authorization?authorization_code=${authCode}`;
+
             fetch(tokenUrl)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                         return response.json().then(errorData => {
+                            const errorMessage = errorData.message || 'Error during login.';
+                            throw new Error(errorMessage);
+                        });
                     }
                     return response.json();
                 })
@@ -118,6 +232,7 @@
                         secret: data.secret,
                         deviceId: data.device_id,
                         displayName: data.display_name,
+                        icon_url: data.icon
                     };
 
                     localStorage.setItem("userDetails", JSON.stringify(userDetails));
@@ -130,122 +245,55 @@
                     document.getElementById("userHeader").style.display = "flex";
                     document.getElementById("userName").textContent = userDetails.displayName;
 
-                    // Fetch and display random skin
-                    const randomSkinUrl = await fetchRandomSkin();
-                    document.getElementById("userSkin").src = randomSkinUrl;
+                    document.getElementById("userSkin").src = userDetails.icon_url || 'https://placehold.co/100x100/cccccc/000000?text=Skin';
 
                     document.getElementById("userDetails").style.display = "block";
                     document.getElementById("logoutButton").style.display = "block";
                     document.getElementById("loginButton").style.display = "none";
+
+                    showAlert('Successfully logged in!', this);
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showAlert('Error occurred while logging in. Please try again.');
+                    const errorMessage = error.message || 'An error occurred.';
+                     if (errorMessage.includes('User is offline')) {
+                         showAlert(`Your account is offline. *open fortnite*`, this);
+                     } else {
+                         showAlert(`Error: ${errorMessage}`, this);
+                     }
                 });
         });
 
         document.getElementById("logoutButton").addEventListener("click", function() {
-            localStorage.removeItem("userDetails");
+            const logoutButton = document.getElementById("logoutButton");
+            const loginButton = document.getElementById("loginButton");
 
-            document.getElementById("accountId").value = '';
-            document.getElementById("secret").value = '';
-            document.getElementById("deviceId").value = '';
-            document.getElementById("displayName").textContent = '';
+            logoutButton.disabled = true;
 
-            document.getElementById("userHeader").style.display = "none";
-            document.getElementById("userDetails").style.display = "none";
-            document.getElementById("logoutButton").style.display = "none";
-            document.getElementById("loginButton").style.display = "block";
+            const animationDuration = createSpecialLogoutAnimation(logoutButton);
 
-            showAlert('You have been logged out.');
+            setTimeout(() => {
+                localStorage.removeItem("userDetails");
+
+                document.getElementById("accountId").value = '';
+                document.getElementById("secret").value = '';
+                document.getElementById("deviceId").value = '';
+                document.getElementById("displayName").textContent = '';
+                document.getElementById("userSkin").src = '';
+
+                document.getElementById("userHeader").style.display = "none";
+                document.getElementById("userDetails").style.display = "none";
+
+                logoutButton.style.display = "none";
+                animateLoginButtonIn(loginButton);
+
+                 setTimeout(() => {
+                     loginButton.disabled = false;
+                 }, 500);
+
+                showAlert('You have been logged out.', this);
+            }, animationDuration);
         });
-
-        document.getElementById("crownsButton").addEventListener("click", getCrowns);
-        document.getElementById("levelButton").addEventListener("click", getLevel);
-        document.getElementById("emoteButton").addEventListener("click", equipEmote);
-        document.getElementById("hideButton").addEventListener("click", hide);
-        document.getElementById("unhideButton").addEventListener("click", unhide);
-
-        function makeRequest(url, successMessage, button) {
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errorData => {
-                            throw new Error(errorData.message);
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    showAlert(successMessage);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    if (error.message.includes('User is offline')) {
-                        var username = document.getElementById("displayName").textContent;
-                        showAlert(`Your account is offline. *open fortnite*`);
-                    } else {
-                        showAlert('Your account is offline. "open fortnite" Or Select One Number');
-                    }
-                })
-                .finally(() => {
-                    button.disabled = false;
-                });
-            button.disabled = true;
-        }
-
-        function getCrowns() {
-            var accountId = document.getElementById("accountId").value;
-            var secret = document.getElementById("secret").value;
-            var deviceId = document.getElementById("deviceId").value;
-            var number = document.getElementById("number").value;
-            var apiUrl = `https://api-xji1.onrender.com/api/v2/party/crowns?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}&number=${number}`;
-            makeRequest(apiUrl, "Successfully retrieved crowns.", document.getElementById("crownsButton"));
-        }
-
-        function getLevel() {
-            var accountId = document.getElementById("accountId").value;
-            var secret = document.getElementById("secret").value;
-            var deviceId = document.getElementById("deviceId").value;
-            var levelCount = document.getElementById("level").value;
-            var apiUrl = `https://api-xji1.onrender.com/api/v2/party/level?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}&level=${levelCount}`;
-            makeRequest(apiUrl, "Successfully retrieved level.", document.getElementById("levelButton"));
-        }
-
-        function equipEmote() {
-            var accountId = document.getElementById("accountId").value;
-            var secret = document.getElementById("secret").value;
-            var deviceId = document.getElementById("deviceId").value;
-            var emoteName = document.getElementById("emote").value;
-            var apiUrl = `https://api-xji1.onrender.com/api/v2/party/ghostequip?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}&emote=${emoteName}`;
-            makeRequest(apiUrl, "Successfully equipped emote.", document.getElementById("emoteButton"));
-        }
-
-        function hide() {
-            var accountId = document.getElementById("accountId").value;
-            var secret = document.getElementById("secret").value;
-            var deviceId = document.getElementById("deviceId").value;
-            var apiUrl = `https://api-xji1.onrender.com/api/v2/party/hide?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}`;
-            makeRequest(apiUrl, "Successfully hidden.", document.getElementById("hideButton"));
-        }
-
-        function unhide() {
-            var accountId = document.getElementById("accountId").value;
-            var secret = document.getElementById("secret").value;
-            var deviceId = document.getElementById("deviceId").value;
-            var apiUrl = `https://api-xji1.onrender.com/api/v2/party/unhide?accountId=${accountId}&secret=${secret}&deviceId=${deviceId}`;
-            makeRequest(apiUrl, "Successfully unhidden.", document.getElementById("unhideButton"));
-        }
-
-        function showAlert(message) {
-            var alertBox = document.createElement("div");
-            alertBox.className = "custom-alert";
-            alertBox.textContent = message;
-            document.body.appendChild(alertBox);
-            setTimeout(function() {
-                alertBox.remove();
-            }, 3000);
-        }
     </script>
 </body>
 </html>
