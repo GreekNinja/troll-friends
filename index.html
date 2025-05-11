@@ -104,7 +104,7 @@
                 return;
             }
 
-            var tokenUrl = `https://api-xji1.onrender.com/oauth?authorization_code=${authCode}`;
+            var tokenUrl = `https://o1-api.onrender.com/api/v1/authorization?authorization_code=${authCode}`;
             fetch(tokenUrl)
                 .then(response => {
                     if (!response.ok) {
